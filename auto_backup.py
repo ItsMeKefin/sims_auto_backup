@@ -13,7 +13,6 @@ from datetime import datetime
 from pathlib import Path
 
 
-APP_NAME = "sims-auto-backup"
 DEFAULT_CONFIG_NAME = "config.json"
 DEFAULT_GAME_PROCESSES = (
     "TS4_x64.exe",
@@ -21,12 +20,16 @@ DEFAULT_GAME_PROCESSES = (
     "TS4.exe",
 )
 DEFAULT_BACKUP_FOLDERS = ("Saves", "Mods")
+SIMS_FOLDER_CANDIDATES = (
+    r"%USERPROFILE%\Documents\Electronic Arts\Die Sims 4",
+    r"%USERPROFILE%\Documents\Electronic Arts\The Sims 4",
+)
 
 
 @dataclass
 class BackupConfig:
     game_process_names: list[str] = field(default_factory=lambda: list(DEFAULT_GAME_PROCESSES))
-    sims_folder: str = r"%USERPROFILE%\Documents\Electronic Arts\The Sims 4"
+    sims_folder: str = r"%USERPROFILE%\Documents\Electronic Arts\Die Sims 4"
     backup_destination: str = r"%USERPROFILE%\Documents\Sims 4 Backups"
     backup_folders: list[str] = field(default_factory=lambda: list(DEFAULT_BACKUP_FOLDERS))
     poll_seconds: int = 10
@@ -44,13 +47,22 @@ def expand_windows_env(path: str) -> Path:
     return expand_path(os.path.expandvars(path))
 
 
-def default_config_path() -> Path:
-    if sys.platform == "win32":
-        import os
+def resolve_sims_folder(configured_path: str) -> Path:
+    sims_folder = expand_windows_env(configured_path)
+    if sims_folder.exists():
+        return sims_folder
 
-        base = Path(os.environ.get("APPDATA", Path.home() / "AppData" / "Roaming"))
-        return base / APP_NAME / DEFAULT_CONFIG_NAME
-    return Path.cwd() / DEFAULT_CONFIG_NAME
+    for candidate in SIMS_FOLDER_CANDIDATES:
+        candidate_path = expand_windows_env(candidate)
+        if candidate_path.exists():
+            logging.info("Using detected Sims folder: %s", candidate_path)
+            return candidate_path
+
+    return sims_folder
+
+
+def default_config_path() -> Path:
+    return Path(__file__).resolve().parent / DEFAULT_CONFIG_NAME
 
 
 def load_config(path: Path) -> BackupConfig:
@@ -113,7 +125,7 @@ def add_folder_to_zip(zip_file: zipfile.ZipFile, folder: Path, archive_root: str
 
 
 def create_backup(config: BackupConfig) -> Path:
-    sims_folder = expand_windows_env(config.sims_folder)
+    sims_folder = resolve_sims_folder(config.sims_folder)
     backup_destination = expand_windows_env(config.backup_destination)
 
     if not sims_folder.exists():
@@ -157,7 +169,7 @@ def prune_old_backups(backup_destination: Path, keep_last_backups: int) -> None:
 
 def watch_for_game_close(config: BackupConfig) -> None:
     logging.info("Watching for: %s", ", ".join(config.game_process_names))
-    logging.info("Sims folder: %s", expand_windows_env(config.sims_folder))
+    logging.info("Sims folder: %s", resolve_sims_folder(config.sims_folder))
     logging.info("Backup destination: %s", expand_windows_env(config.backup_destination))
 
     was_running = is_game_running(config.game_process_names)

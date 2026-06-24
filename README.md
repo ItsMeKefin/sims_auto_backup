@@ -1,11 +1,11 @@
 # Sims Auto Backup
 
-Python script for Windows that watches for The Sims 4 to close, then creates a timestamped zip backup of your save data and mods.
+Python script for Windows that watches for The Sims 4 / Die Sims 4 to close, then creates a timestamped zip backup of your save data and mods.
 
 By default it backs up:
 
-- `%USERPROFILE%\Documents\Electronic Arts\The Sims 4\Saves`
-- `%USERPROFILE%\Documents\Electronic Arts\The Sims 4\Mods`
+- `%USERPROFILE%\Documents\Electronic Arts\Die Sims 4\Saves`
+- `%USERPROFILE%\Documents\Electronic Arts\Die Sims 4\Mods`
 
 Backups are written to:
 
@@ -22,7 +22,7 @@ Backups are written to:
 Run this from the project folder:
 
 ```powershell
-python main.py
+python auto_backup.py
 ```
 
 Leave the window open while you play. When The Sims 4 process closes, the script creates a backup zip.
@@ -30,7 +30,7 @@ Leave the window open while you play. When The Sims 4 process closes, the script
 To test a backup immediately:
 
 ```powershell
-python main.py --backup-now
+python auto_backup.py --backup-now
 ```
 
 ## Configuration
@@ -38,14 +38,16 @@ python main.py --backup-now
 Create a config file:
 
 ```powershell
-python main.py --init-config
+python auto_backup.py --init-config
 ```
 
 On Windows this writes:
 
 ```text
-%APPDATA%\sims-auto-backup\config.json
+config.json
 ```
+
+The config file is stored in the same folder as `auto_backup.py`.
 
 Example config:
 
@@ -56,7 +58,7 @@ Example config:
     "TS4_DX9_x64.exe",
     "TS4.exe"
   ],
-  "sims_folder": "%USERPROFILE%\\Documents\\Electronic Arts\\The Sims 4",
+  "sims_folder": "%USERPROFILE%\\Documents\\Electronic Arts\\Die Sims 4",
   "backup_destination": "%USERPROFILE%\\Documents\\Sims 4 Backups",
   "backup_folders": [
     "Saves",
@@ -79,7 +81,7 @@ Use Task Scheduler:
 3. Trigger: **When I log on**.
 4. Action: **Start a program**.
 5. Program: your `python.exe` path.
-6. Arguments: full path to `main.py`.
+6. Arguments: full path to `auto_backup.py`.
 7. Start in: this project folder.
 
-If the script opens and closes immediately, run `python main.py --backup-now` in PowerShell first to see the error.
+If the script opens and closes immediately, run `python auto_backup.py --backup-now` in PowerShell first to see the error.
