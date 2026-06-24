@@ -1,11 +1,10 @@
 # Sims Auto Backup
 
-Python script for Windows that watches for The Sims 4 / Die Sims 4 to close, then creates a timestamped zip backup of your save data and mods.
+Python script for Windows that watches for The Sims 4 / Die Sims 4 to close, then creates a timestamped zip backup of your save data.
 
 By default it backs up:
 
 - `%USERPROFILE%\Documents\Electronic Arts\Die Sims 4\Saves`
-- `%USERPROFILE%\Documents\Electronic Arts\Die Sims 4\Mods`
 
 Backups are written to:
 
@@ -61,8 +60,7 @@ Example config:
   "sims_folder": "%USERPROFILE%\\Documents\\Electronic Arts\\Die Sims 4",
   "backup_destination": "%USERPROFILE%\\Documents\\Sims 4 Backups",
   "backup_folders": [
-    "Saves",
-    "Mods"
+    "Saves"
   ],
   "poll_seconds": 10,
   "keep_last_backups": 20,

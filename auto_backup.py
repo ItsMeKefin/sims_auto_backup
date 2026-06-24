@@ -19,7 +19,7 @@ DEFAULT_GAME_PROCESSES = (
     "TS4_DX9_x64.exe",
     "TS4.exe",
 )
-DEFAULT_BACKUP_FOLDERS = ("Saves", "Mods")
+DEFAULT_BACKUP_FOLDERS = ("Saves",)
 SIMS_FOLDER_CANDIDATES = (
     r"%USERPROFILE%\Documents\Electronic Arts\Die Sims 4",
     r"%USERPROFILE%\Documents\Electronic Arts\The Sims 4",
@@ -200,7 +200,7 @@ def setup_logging(verbose: bool) -> None:
 
 def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(
-        description="Back up The Sims 4 save data and mods after the game closes."
+        description="Back up The Sims 4 save data after the game closes."
     )
     parser.add_argument(
         "--config",
